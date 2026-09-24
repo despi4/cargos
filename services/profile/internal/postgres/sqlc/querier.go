@@ -2,19 +2,19 @@
 // versions:
 //   sqlc v1.31.1
 
-package repository
+package sqlc
 
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	uuid "github.com/google/uuid"
 )
 
 type Querier interface {
 	CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error)
-	DeleteProfile(ctx context.Context, id pgtype.UUID) error
-	GetProfileByID(ctx context.Context, id pgtype.UUID) (Profile, error)
-	GetProfileByUserID(ctx context.Context, userID pgtype.UUID) (Profile, error)
+	DeleteProfile(ctx context.Context, id uuid.UUID) error
+	GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error)
+	GetProfileByUserID(ctx context.Context, userID uuid.UUID) (Profile, error)
 	UpdateProfile(ctx context.Context, arg UpdateProfileParams) error
 }
 

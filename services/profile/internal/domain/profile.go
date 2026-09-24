@@ -18,4 +18,5 @@ type Profile struct {
 	Education string
 	Preferences []string
 	CreatedAt time.Time
+	UpdatedAt time.Time
 }

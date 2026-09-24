@@ -3,11 +3,12 @@
 //   sqlc v1.31.1
 // source: profiles.sql
 
-package repository
+package sqlc
 
 import (
 	"context"
 
+	uuid "github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -21,15 +22,15 @@ RETURNING id, user_id, name, age, skills, positions, location, experience, educa
 `
 
 type CreateProfileParams struct {
-	UserID      pgtype.UUID `json:"user_id"`
-	Name        string      `json:"name"`
-	Age         pgtype.Int4 `json:"age"`
-	Skills      []string    `json:"skills"`
-	Positions   []string    `json:"positions"`
-	Location    string      `json:"location"`
-	Experience  int32       `json:"experience"`
-	Education   string      `json:"education"`
-	Preferences []string    `json:"preferences"`
+	UserID      uuid.UUID
+	Name        string
+	Age         pgtype.Int4
+	Skills      []string
+	Positions   []string
+	Location    string
+	Experience  int32
+	Education   string
+	Preferences []string
 }
 
 func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error) {
@@ -66,7 +67,7 @@ const deleteProfile = `-- name: DeleteProfile :exec
 DELETE FROM profiles WHERE id = $1
 `
 
-func (q *Queries) DeleteProfile(ctx context.Context, id pgtype.UUID) error {
+func (q *Queries) DeleteProfile(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteProfile, id)
 	return err
 }
@@ -77,7 +78,7 @@ FROM profiles
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetProfileByID(ctx context.Context, id pgtype.UUID) (Profile, error) {
+func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (Profile, error) {
 	row := q.db.QueryRow(ctx, getProfileByID, id)
 	var i Profile
 	err := row.Scan(
@@ -103,7 +104,7 @@ FROM profiles
 WHERE user_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetProfileByUserID(ctx context.Context, userID pgtype.UUID) (Profile, error) {
+func (q *Queries) GetProfileByUserID(ctx context.Context, userID uuid.UUID) (Profile, error) {
 	row := q.db.QueryRow(ctx, getProfileByUserID, userID)
 	var i Profile
 	err := row.Scan(
@@ -132,8 +133,8 @@ WHERE user_id = $1
 `
 
 type UpdateProfileParams struct {
-	UserID pgtype.UUID `json:"user_id"`
-	Name   pgtype.Text `json:"name"`
+	UserID uuid.UUID
+	Name   pgtype.Text
 }
 
 func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) error {
