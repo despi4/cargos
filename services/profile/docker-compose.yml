@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${PROFILE_POSTGRES_DB:-flexfind_profile}
+      POSTGRES_USER: ${PROFILE_POSTGRES_USER:-flexfind}
+      POSTGRES_PASSWORD: ${PROFILE_POSTGRES_PASSWORD:-flexfind_dev}
+    ports:
+      - "127.0.0.1:${PROFILE_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - profile_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  profile_postgres_data:
