@@ -18,7 +18,7 @@ observability
 retry / idempotency
 ```
 
-### Structure
+### Project Pipeline
 
 ```
 Client (Web/App)
@@ -40,4 +40,24 @@ API Gateway (Gin)
 └──────────────────────┘
         ↓
      RabbitMQ
+```
+
+### Structure of Services
+
+**Hexganol Architecture**
+```
+    internal/
+    ├── core/                       # Чистая бизнес-логика              
+    │   ├── domain/                 # Бизнес модели                                 
+    │   ├── ports/                  # Interfaces                                         
+    │   └── services/               # Реализация бизнес-логики                                 
+    │                                                                                          
+    └── adapters/    
+        ├── primary/                # Вход в сервис                               
+        │   ├── http/               # Gin контроллеры, роуты, DTO запросов/ответов
+        │   └── grpc/               # gRPC хэндлеры
+        │
+        └── secondary/              # ТО, К ЧЕМУ ОБРАЩАЕМСЯ МЫ (инфраструктура)
+            ├── postgres/           # Репозиторий БД (sqlc, pgx)
+            └── redis/              # Репозиторий сессий (go-redis)
 ```
