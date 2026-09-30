@@ -2,7 +2,7 @@
 
 Cargos - это backend логистической платформы
 
-### Technical Stack\
+### Technical Stack
 
 ```
 Go
