@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"github.com/depsi4/cargos/auth_service/internal/core/domain"
+	"github.com/despi4/cargos/auth_service/internal/core/domain"
 	"github.com/google/uuid"
 )
 

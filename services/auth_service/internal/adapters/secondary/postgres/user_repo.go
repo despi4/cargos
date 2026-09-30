@@ -3,9 +3,9 @@ package postgres
 import (
 	"context"
 
-	"github.com/depsi4/cargos/auth_service/internal/adapters/postgres/db"
-	"github.com/depsi4/cargos/auth_service/internal/core/domain"
-	"github.com/depsi4/cargos/auth_service/internal/core/ports"
+	"github.com/despi4/cargos/auth_service/internal/core/domain"
+	"github.com/despi4/cargos/auth_service/internal/core/ports"
+	"github.com/despi4/cargos/auth_service/internal/adapters/secondary/postgres/db"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -90,7 +90,7 @@ func(r *UserRepo) GetByEmail(ctx context.Context, email string) (*domain.User, e
 }
 
 func(r *UserRepo) GetByUsername(ctx context.Context, username string) (*domain.User, error) {
-	pgUser, err := r.q.GetUserByEmail(ctx, username)
+	pgUser, err := r.q.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}
