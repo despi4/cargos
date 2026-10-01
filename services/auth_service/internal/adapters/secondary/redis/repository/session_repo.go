@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	ErrSessionNotFound = errors.New("session not found")
-	ErrSessionExpired  = errors.New("session expired")
+	ErrSessionNotFound = domain.ErrSessionNotFound
+	ErrSessionExpired  = domain.ErrSessionExpired
 )
 
 type RedisSessionRepo struct {

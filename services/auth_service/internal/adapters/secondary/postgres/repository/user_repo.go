@@ -1,11 +1,11 @@
-package postgres
+package repository
 
 import (
 	"context"
 
+	"github.com/despi4/cargos/auth_service/internal/adapters/secondary/postgres/db"
 	"github.com/despi4/cargos/auth_service/internal/core/domain"
 	"github.com/despi4/cargos/auth_service/internal/core/ports"
-	"github.com/despi4/cargos/auth_service/internal/adapters/secondary/postgres/db"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"

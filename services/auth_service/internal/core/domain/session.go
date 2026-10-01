@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,3 +25,8 @@ type Session struct {
 	ExpiresAt    time.Time
 	CreatedAt    time.Time
 }
+
+var(
+	ErrExpiredToken error = errors.New("expired token")
+	ErrInvalidToken error = errors.New("invalid token")
+)
