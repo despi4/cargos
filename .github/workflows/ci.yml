@@ -1,0 +1,29 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: cargos
+          POSTGRES_PASSWORD: cargos
+          POSTGRES_DB: cargos_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U cargos -d cargos_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://cargos:cargos@localhost:5432/cargos_test?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: services/go.mod
+          cache-dependency-path: services/go.sum
+      - run: go vet ./...
+        working-directory: services
+      - run: go test -race ./...
+        working-directory: services
+      - run: python3 scripts/generate-openapi.py && git diff --exit-code -- services/api_gateway/docs/openapi.json
