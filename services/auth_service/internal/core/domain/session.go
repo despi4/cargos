@@ -6,21 +6,23 @@ import (
 	"github.com/google/uuid"
 )
 
-// TokenPair — то, что мы отдаем клиенту после логина
 type TokenPair struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
 }
-
-// Session — сущность сессии, которую мы будем хранить в Redis на сервере.
-// Она привязывается к Refresh токену.
+type Claims struct {
+	UserID    uuid.UUID `json:"sub"`
+	SessionID uuid.UUID `json:"sid"`
+	ExpiresAt int64     `json:"exp"`
+}
 type Session struct {
-	ID           uuid.UUID // Уникальный ID сессии
-	UserID       uuid.UUID
-	RefreshToken string    // Сам токен (или его хэш в целях безопасности)
-	ClientIP     string    // Полезно для аналитики и безопасности
-	UserAgent    string    // Инфа об устройстве (Chrome, iOS App)
-	IsBlocked    bool      // Флаг принудительного отзыва сессии
-	ExpiresAt    time.Time
-	CreatedAt    time.Time
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	RefreshHash string
+	ClientIP    string
+	UserAgent   string
+	ExpiresAt   time.Time
+	CreatedAt   time.Time
 }

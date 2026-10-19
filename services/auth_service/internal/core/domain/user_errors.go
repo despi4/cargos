@@ -1,12 +1,16 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/depsi4/cargos/pkg/fault"
+)
 
 var (
-	ErrUserNotFound       = errors.New("user not found")
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrUserAlreadyExists  = errors.New("user already exists")
-	ErrUnauthorized       = errors.New("unauthorized")
+	ErrUserNotFound       = fault.ErrNotFound
+	ErrInvalidCredentials = fault.ErrUnauthorized
+	ErrUserAlreadyExists  = fault.ErrConflict
+	ErrUnauthorized       = fault.ErrUnauthorized
 	ErrForbidden          = errors.New("forbidden")
-	ErrInvalidArgument = errors.New("invalid argument")
+	ErrInvalidArgument    = errors.New("invalid argument")
 )

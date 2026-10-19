@@ -17,19 +17,20 @@ type UserRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-// SessionRepository определяет контракт для работы с сессиями и refresh-токенами (обычно Redis).
+// SessionRepository stores revocable sessions and atomically rotates refresh tokens.
 type SessionRepository interface {
 	Create(ctx context.Context, session *domain.Session) error
 	GetByID(ctx context.Context, sessionID uuid.UUID) (*domain.Session, error)
-	GetByRefreshToken(ctx context.Context, refreshToken string) (*domain.Session, error)
+	GetByRefreshHash(ctx context.Context, refreshHash string) (*domain.Session, error)
 	Delete(ctx context.Context, sessionID uuid.UUID) error
 	DeleteByUserID(ctx context.Context, userID uuid.UUID) error
+	Rotate(ctx context.Context, previous *domain.Session, next *domain.Session) error
 }
 
 // TokenService определяет контракт для генерации и верификации токенов (JWT).
 type TokenService interface {
-	GenerateTokenPair(user *domain.User) (*domain.TokenPair, error)
-	ValidateAccessToken(token string) (uuid.UUID, error)
+	GenerateTokenPair(userID, sessionID uuid.UUID) (*domain.TokenPair, error)
+	ValidateAccessToken(token string) (*domain.Claims, error)
 }
 
 // PasswordHasher определяет контракт для хэширования и проверки паролей (например, bcrypt/argon2).
@@ -44,4 +45,6 @@ type AuthService interface {
 	Login(ctx context.Context, email, password, clientIP, userAgent string) (*domain.TokenPair, error)
 	RefreshToken(ctx context.Context, refreshToken, clientIP, userAgent string) (*domain.TokenPair, error)
 	Logout(ctx context.Context, sessionID uuid.UUID) error
+	CurrentUser(ctx context.Context, accessToken string) (*domain.User, error)
+	LogoutAccess(ctx context.Context, accessToken string) error
 }
