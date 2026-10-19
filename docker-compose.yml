@@ -1,21 +1,100 @@
+x-app: &app
+  restart: unless-stopped
+  environment: &environment
+    HTTP_ADDR: :8080
+    DATABASE_URL: postgres://cargos:${POSTGRES_PASSWORD:-cargos}@postgres:5432/cargos_auth?sslmode=disable
+    INTERNAL_KEY: ${INTERNAL_KEY:-dev-internal-key-change-before-deploy-123456789}
+    JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-before-deploy-123456789}
+    AUTH_URL: http://auth:8080
+    INVENTORY_URL: http://inventory:8080
+    PROCUREMENT_URL: http://procurement:8080
+    DEMAND_URL: http://demand:8080
+    PREDICTION_URL: http://prediction:8080
+    NOTIFICATION_URL: http://notification:8080
+  depends_on:
+    postgres:
+      condition: service_healthy
+
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: cargos_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: cargos
-      POSTGRES_PASSWORD: cargos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cargos}
       POSTGRES_DB: cargos_auth
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d cargos_auth"]
+      test: [CMD-SHELL, pg_isready -U cargos -d cargos_auth]
       interval: 5s
-      timeout: 5s
-      retries: 5
+      timeout: 3s
+      retries: 10
+
+  auth:
+    <<: *app
+    image: cargos-auth:local
+    build:
+      context: ./services
+      args:
+        SERVICE: auth_service
+  inventory:
+    <<: *app
+    image: cargos-inventory:local
+    build:
+      context: ./services
+      args:
+        SERVICE: inventory_service
+  procurement:
+    <<: *app
+    image: cargos-procurement:local
+    build:
+      context: ./services
+      args:
+        SERVICE: procurement_service
+  demand:
+    <<: *app
+    image: cargos-demand:local
+    build:
+      context: ./services
+      args:
+        SERVICE: demand_service
+  prediction:
+    <<: *app
+    image: cargos-prediction:local
+    build:
+      context: ./services
+      args:
+        SERVICE: prediction_service
+  notification:
+    <<: *app
+    image: cargos-notification:local
+    build:
+      context: ./services
+      args:
+        SERVICE: notification_service
+  gateway:
+    <<: *app
+    image: cargos-gateway:local
+    build:
+      context: ./services
+      args:
+        SERVICE: api_gateway
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    depends_on:
+      auth:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      procurement:
+        condition: service_healthy
+      demand:
+        condition: service_healthy
+      prediction:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
 
 volumes:
   postgres_data:
